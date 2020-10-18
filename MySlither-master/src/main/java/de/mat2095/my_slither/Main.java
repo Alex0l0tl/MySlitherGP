@@ -5,8 +5,10 @@ import javax.swing.*;
 
 public final class Main {
 
+    // Launches the game and automatically catches certain errors
     public static void main(String[] args) {
 
+        // Launches the game
         System.setProperty("sun.java2d.opengl", "true");
 
         // workaround to fix issue on linux: https://github.com/bulenkov/Darcula/issues/29

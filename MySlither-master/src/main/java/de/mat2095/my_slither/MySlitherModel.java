@@ -9,6 +9,9 @@ class MySlitherModel {
 
     static final double PI2 = Math.PI * 2;
 
+    /* These final variables should be correctly described in JavaDoc notation, their use here is unclear
+    *  Possible danger due to encapsulation issues? Variables not private
+    */
     final int gameRadius;
     final int sectorSize;
     final double spangdv;
@@ -29,6 +32,9 @@ class MySlitherModel {
 
     Snake snake;
 
+    /*
+    * Constructor class, adding JavaDoc comments would help for editing the variables/adjusting them here.
+     */
     MySlitherModel(int gameRadius, int sectorSize, double spangdv, double nsp1, double nsp2, double nsp3, double mamu1, double mamu2, double cst, int mscps, MySlitherJFrame view) {
         this.gameRadius = gameRadius;
         this.sectorSize = sectorSize;
