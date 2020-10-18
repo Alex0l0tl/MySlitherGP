@@ -61,11 +61,13 @@ class MySlitherModel {
         lastUpdateTime = System.currentTimeMillis();
     }
 
+    // Uses a formula to calculate the current snake length and return the integer value
     int getSnakeLength(int bodyLength, double fillAmount) {
         bodyLength = Math.min(bodyLength, mscps);
         return (int) (15 * (fpsls[bodyLength] + fillAmount * fmlts[bodyLength]) - 20);
     }
 
+    // Updates the positions of all objects in the window and calculates if any snakes have collided
     void update() {
         synchronized (view.modelLock) {
             long newTime = System.currentTimeMillis();
@@ -74,6 +76,7 @@ class MySlitherModel {
             deltaTimeWIP = Math.min(deltaTimeWIP, 5.0);
             final double deltaTime = deltaTimeWIP;
 
+            // This section of the method decides if snakes have collided or not
             snakes.values().forEach(cSnake -> {
 
                 double snakeDeltaAngle = mamu1 * deltaTime * cSnake.getScang() * cSnake.getSpang();
@@ -132,6 +135,7 @@ class MySlitherModel {
                 cSnake.y += Math.sin(cSnake.ang) * snakeDistance;
             });
 
+            // This part of the method decides if a snake is close enough to eat a certain prey object
             // TODO: eahang
             double preyDeltaAngle = mamu2 * deltaTime;
             preys.values().forEach(prey -> {
@@ -177,6 +181,7 @@ class MySlitherModel {
         }
     }
 
+    // Spawns in a new snake at a certain x and y coordinate and at a certain angle
     void addSnake(int snakeID, String name, double x, double y, double wang, double ang, double sp, double fam, Deque<SnakeBodyPart> body) {
         synchronized (view.modelLock) {
             Snake newSnake = new Snake(snakeID, name, x, y, wang, ang, sp, fam, body, this);
@@ -187,50 +192,59 @@ class MySlitherModel {
         }
     }
 
+    // A method to find which snake has a specific ID
     Snake getSnake(int snakeID) {
         return snakes.get(snakeID);
     }
 
+    // Removes a snake from the game when they quit or are destroyed
     void removeSnake(int snakeID) {
         synchronized (view.modelLock) {
             snakes.remove(snakeID);
         }
     }
 
+    // Adds a food object in certain coordinates on the map
     void addPrey(int id, double x, double y, double radius, int dir, double wang, double ang, double sp) {
         synchronized (view.modelLock) {
             preys.put(id, new Prey(x, y, radius, dir, wang, ang, sp));
         }
     }
 
+    // Finds a specific prey by id
     Prey getPrey(int id) {
         return preys.get(id);
     }
 
+    // removes a specific prey when eaten or despawning for some other reason
     void removePrey(int id) {
         synchronized (view.modelLock) {
             preys.remove(id);
         }
     }
 
+    // Add food to a specific area (for instance when a snake dies on each segment of that snake)
     void addFood(int x, int y, double size, boolean fastSpawn) {
         synchronized (view.modelLock) {
             foods.put(y * gameRadius * 3 + x, new Food(x, y, size, fastSpawn));
         }
     }
 
+    // A method to remove food when eaten by a snake
     void removeFood(int x, int y) {
         synchronized (view.modelLock) {
             foods.remove(y * gameRadius * 3 + x);
         }
     }
 
+    // Creates a new sector for the snakes to move into
     void addSector(int x, int y) {
         synchronized (view.modelLock) {
             sectors[y][x] = true;
         }
     }
 
+    // Removes a sector when the snake moves too far away
     void removeSector(int x, int y) {
         synchronized (view.modelLock) {
             sectors[y][x] = false;
