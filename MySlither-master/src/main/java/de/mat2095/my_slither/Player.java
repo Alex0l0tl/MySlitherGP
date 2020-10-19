@@ -15,11 +15,13 @@ abstract class Player {
 
     static class Wish {
 
-        final Double angle;
+        final Double angle; // Measured in radians
         final Boolean boost;
 
         Wish(Double angle, Boolean boost) {
+            // Check to see if angle variable is valid
             if (angle != null && (angle < 0 || angle >= PI2)) {
+                // if not: throw an exception
                 throw new IllegalArgumentException("angle not in range 0 to PI2");
             }
             this.angle = angle;
