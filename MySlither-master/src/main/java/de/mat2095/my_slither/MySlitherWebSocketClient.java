@@ -23,20 +23,20 @@ import org.java_websocket.handshake.ServerHandshake;
 
 final class MySlitherWebSocketClient extends WebSocketClient {
 
-    private static final Map<String, String> HEADER = new LinkedHashMap<>();
-    private static final byte[] DATA_PING = new byte[]{(byte) 251};
-    private static final byte[] DATA_BOOST_START = new byte[]{(byte) 253};
-    private static final byte[] DATA_BOOST_STOP = new byte[]{(byte) 254};
+    private static final Map<String, String> HEADER = new LinkedHashMap<>(); // additional http headers that are passed into the super
+    private static final byte[] DATA_PING = new byte[]{(byte) 251};          // single element byte array containing the UNICODE for "-5"
+    private static final byte[] DATA_BOOST_START = new byte[]{(byte) 253};   // single element byte array containing the UNICODE for "-3"
+    private static final byte[] DATA_BOOST_STOP = new byte[]{(byte) 254};    // single element byte array containing the UNICODE for "-2"
     private static final double ANGLE_CONSTANT = 16777215;
 
     private final MySlitherJFrame view;
     private MySlitherModel model;
 
-    private byte[] initRequest;
-    private long lastAngleTime, lastPingTime;
-    private byte lastAngleContent, angleToBeSent;
-    private boolean lastBoostContent;
-    private boolean waitingForPong;
+    private byte[] initRequest;                   // UNICODE s, UNICODE newline, snake number, length of user nickname, nickname char 1, nickname char 2...
+    private long lastAngleTime, lastPingTime;     // system time when the previous angle was read and when the last ping was sent
+    private byte lastAngleContent, angleToBeSent; // the angle which was in the last sent packet and the angle that will be sent in the current packet
+    private boolean lastBoostContent;             // the value of boost which was in the last sent packet
+    private boolean waitingForPong;               // whether the client is waiting from a return ping (aka pong) from the server
 
     static {
         HEADER.put("Origin", "http://slither.io");
