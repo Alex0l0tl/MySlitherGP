@@ -104,10 +104,10 @@ final class MySlitherWebSocketClient extends WebSocketClient {
         }
         int[] data = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            data[i] = b[i] & 0xFF;
+            data[i] = b[i] & 0xFF; // Copies contents of bytes/b to data
         }
         char cmd = (char) data[2];
-        switch (cmd) {
+        switch (cmd) { // Decides on which instruction is carried out by the third character in data
             case '6':
                 processPreInitResponse(data);
                 break;
@@ -175,7 +175,7 @@ final class MySlitherWebSocketClient extends WebSocketClient {
                 processKill(data);
                 break;
             default:
-                view.log("Unknown command: " + cmd);
+                view.log("Unknown command: " + cmd); // If unknown UNICODE character entered, add to log
         }
     }
 
@@ -680,30 +680,32 @@ final class MySlitherWebSocketClient extends WebSocketClient {
     }
 
     private void processKill(int[] data) {
-        if (data.length != 8) {
+        if (data.length != 8) { // checks if data is valid, if not adds error to log and returns
             view.log("kill wrong length!");
             return;
         }
 
+        // extracts id and kills from the data
         int id = (data[3] << 8) | data[4];
         int kills = (data[5] << 16) | (data[6] << 8) | data[7];
 
+        // adds kill of snake id
         if (id == model.snake.id) {
             view.setKills(kills);
-        } else {
+        } else { // if not valid: add to logs
             view.log("kill packet with invalid id: " + id);
         }
     }
 
     void sendInitRequest(int snakeNr, String nick) {
 
-        initRequest = new byte[4 + nick.length()];
-        initRequest[0] = 115;
-        initRequest[1] = 10;
-        initRequest[2] = (byte) snakeNr;
+        initRequest = new byte[4 + nick.length()]; // creates array to fit all necessary data
+        initRequest[0] = 115; // UNICODE "s"
+        initRequest[1] = 10; // UNICODE "\n"
+        initRequest[2] = (byte) snakeNr; // snake number
         initRequest[3] = (byte) nick.length();
         for (int i = 0; i < nick.length(); i++) {
-            initRequest[4 + i] = (byte) nick.codePointAt(i);
+            initRequest[4 + i] = (byte) nick.codePointAt(i); // adds nickname to end of initRequest
         }
 
         // pre-init request
@@ -711,10 +713,11 @@ final class MySlitherWebSocketClient extends WebSocketClient {
         send(new byte[]{99});
     }
 
+    // retrieves a list of URIs of all available servers
     static URI[] getServerList() {
 
         String i49526_String;
-        try {
+        try { // retrives a list of the server URIs as an unformatted string
             HttpURLConnection i49526_HttpURLConnection = (HttpURLConnection) new URL("http://slither.io/i33628.txt").openConnection();
             i49526_HttpURLConnection.setRequestProperty("User-Agent", "java/1.8.0_72");
             InputStream i49526_InputStream = i49526_HttpURLConnection.getInputStream();
@@ -724,6 +727,7 @@ final class MySlitherWebSocketClient extends WebSocketClient {
             throw new Error("Error reading server-list!"); // TODO: set to disconnected
         }
 
+        //breaks down the long string of URIs
         int[] data = new int[(i49526_String.length() - 1) / 2];
         for (int i = 0; i < data.length; i++) {
             int u1 = (i49526_String.codePointAt(i * 2 + 1) - 97 - 14 * i) % 26;
@@ -737,6 +741,7 @@ final class MySlitherWebSocketClient extends WebSocketClient {
             data[i] = (u1 << 4) + u2;
         }
 
+        // pieces the data together into useable URIs and enters them into an array 
         URI[] serverList = new URI[(i49526_String.length() - 1) / 22];
         for (int i = 0; i < serverList.length; i++) {
             try {
